@@ -17,13 +17,24 @@ class UsersService {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const createUserId = await this.mongoDB.create(this.collection, {
-      name, 
+      name,
       email,
       password: hashedPassword
-    })
+    });
 
-    return createUserId
+    return createUserId;
+  }
+
+  async getOrCreateUser({ user }) {
+    const queriedUser = await this.getUser({ email: user.email });
+
+    if (queriedUser) {
+      return queriedUser;
+    }
+
+    await this.createUser({ user });
+    return this.getUser({ email: user.email });
   }
 }
 
-module.exports = UsersService
+module.exports = UsersService;
